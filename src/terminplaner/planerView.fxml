@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="509.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="terminplaner.PlanerViewController">
+   <children>
+      <HBox prefHeight="67.0" prefWidth="448.0">
+         <children>
+            <Label fx:id="titel" prefHeight="67.0" prefWidth="448.0" text="Terminplaner des Jahrhunderts">
+               <font>
+                  <Font size="32.0" />
+               </font></Label>
+         </children>
+      </HBox>
+      <MenuBar fx:id="menuBar" layoutY="67.0" prefHeight="25.0" prefWidth="448.0" />
+      <HBox layoutY="92.0" prefHeight="417.0" prefWidth="448.0">
+         <children>
+            <Label prefHeight="27.0" prefWidth="93.0" text="Datum wählen:" textAlignment="RIGHT">
+               <HBox.margin>
+                  <Insets left="60.0" top="20.0" />
+               </HBox.margin>
+            </Label>
+            <DatePicker fx:id="date" prefHeight="27.0" prefWidth="191.0">
+               <HBox.margin>
+                  <Insets top="20.0" />
+               </HBox.margin>
+            </DatePicker>
+         </children>
+      </HBox>
+      <ListView fx:id="terminliste" layoutY="152.0" prefHeight="322.0" prefWidth="448.0" />
+      <Button fx:id="addButton" layoutX="387.0" layoutY="478.0" mnemonicParsing="false" text="Neu" />
+   </children>
+</AnchorPane>
