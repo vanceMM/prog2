@@ -31,7 +31,7 @@ public class Terminplaner extends TerminVerwaltung {
      */
     public Terminplaner(Kontakt k) {
         besitzer = k;
-        //setTestData();
+        setTestData();
     }
 
     public Kontakt getBesitzer() {

@@ -187,7 +187,6 @@ public class PlanerViewController implements Initializable {
             controller = new TerminViewController(selection, this);
         }
         ViewHelper.showView(controller, location);
-        showTermine();
         
     }
 

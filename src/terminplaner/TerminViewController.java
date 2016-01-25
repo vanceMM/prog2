@@ -4,7 +4,9 @@ package terminplaner;
 
 import adressbuch.Kontakt;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -63,8 +65,14 @@ public class TerminViewController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         ObservableList<Kontakt> items = FXCollections.observableArrayList();
         teilnehmerliste.setItems(items);
+        addTeilnehmer.setOnAction(e->showKontakte());
+        save.setOnAction(e->saveTermin());
+        cancel.setOnAction(e->close());
+        if (termin == null) { initNewTermin(); }
+        else if (termin != null) { initUpdateTermin(); }
         
-        // Hier kommt Ihr Code hinein
+        
+        
     }
 
     /**
@@ -72,7 +80,10 @@ public class TerminViewController implements Initializable {
      * eines neuen Termins. 
      */
     private void initNewTermin() {
-
+        titel.setText("Termineditor");
+        datum.setValue(LocalDate.now());
+        save.setText("Speichern");
+        
 
     }
 
@@ -81,7 +92,13 @@ public class TerminViewController implements Initializable {
      * eines Termins. 
      */
     private void initUpdateTermin() {
-
+        titel.setText("Termin von " + termin.getBesitzer().getName());
+        datum.setValue(termin.getDatum());
+        addTeilnehmer.setDisable(true);
+        von.setText(termin.getVon().toString());
+        bis.setText(termin.getBis().toString());
+        text.setText(termin.getText());
+        
     }
     
     /**
@@ -89,7 +106,9 @@ public class TerminViewController implements Initializable {
      * eines fremden Termins. 
      */
     private void initShowTermin() {
-        
+        initUpdateTermin();
+        addTeilnehmer.setDisable(true);
+        save.setDisable(true);
     }
     
     /**
@@ -100,7 +119,7 @@ public class TerminViewController implements Initializable {
      * z.B. wegen der von/bis Angaben, so wird der Fehler im Fenster angezeigt.
      */
     private void saveTermin() {
-  
+        
     }
 
    
