@@ -90,6 +90,8 @@ public class PlanerViewController implements Initializable {
     }
 
     private void addTermin() {
+        URL location = getClass().getResource("terminView.fxml");
+        ViewHelper.showView(new TerminViewController(null, this), location);
     }
 
     private void configureMenu() {
@@ -171,11 +173,22 @@ public class PlanerViewController implements Initializable {
             Logger.getLogger(PlanerViewController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (TerminUeberschneidungException ex) {
             Logger.getLogger(PlanerViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            showTermine();
         }
     }
 
     private void editTermin() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        Termin selection = terminliste.getSelectionModel().getSelectedItem();
+        Initializable controller = null;
+        URL location = getClass().getResource("terminView.fxml");
+        if(planer.updateErlaubt(selection)) {
+            controller = new TerminViewController(selection, this);
+        }
+        ViewHelper.showView(controller, location);
+        showTermine();
+        
     }
 
     private void getAdressbuch(){
@@ -187,4 +200,10 @@ public class PlanerViewController implements Initializable {
         return ld;
         
     }
+    
+    public void processTermin(Termin t) throws TerminUeberschneidungException {
+        planer.updateTermin(t);
+    }
+    
+    
 }
