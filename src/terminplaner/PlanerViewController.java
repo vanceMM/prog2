@@ -1,6 +1,8 @@
 package terminplaner;
 
 import adressbuch.Adressbuch;
+import adressbuch.AdressbuchViewController;
+import adressbuch.Kontakt;
 import adressbuch.UngueltigerSchluesselException;
 import adressbuch.ViewHelper;
 import java.io.File;
@@ -61,12 +63,13 @@ public class PlanerViewController implements Initializable {
         } catch (UngueltigerSchluesselException ex) {
             Logger.getLogger(PlanerViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        data = FXCollections.observableArrayList();
         //Set the actual date in the timetable
         date.setValue(LocalDate.now());
         //Anmelden des Event Handlers
         date.setOnAction((e) -> showTermine());
         //Anmelden des Event Handlers
-        addButton.setOnAction((e) -> addTermin());
+        addButton.setOnAction((e) -> {addTermin(); showTermine();});
 
         /*
          load.setOnAction((e) -> loadTermine());
@@ -79,19 +82,20 @@ public class PlanerViewController implements Initializable {
     }
 
     private void showTermine() {
-
+        
         terminliste.getItems().clear();
         List<Termin> termineData = planer.getTermineTag(date.getValue());
-
         if (termineData != null) {
             data.addAll(termineData);
         }
-
+        
+        
     }
 
     private void addTermin() {
         URL location = getClass().getResource("terminView.fxml");
         ViewHelper.showView(new TerminViewController(null, this), location);
+        
     }
 
     private void configureMenu() {
@@ -102,14 +106,24 @@ public class PlanerViewController implements Initializable {
         MenuItem edit = new MenuItem("Bearbeiten");
         Menu termin = new Menu("Termine");
         Menu kontakt = new Menu("Kontakte");
+        Menu untermenu = new Menu("Alle Kontakte");
+        
         
         menuBar.getMenus().addAll(termin, kontakt);
         termin.getItems().addAll(load, save);
-        kontakt.getItems().add(edit);
+        kontakt.getItems().addAll(edit, untermenu);
+        kontakt.getItems().get(0).setOnAction(e->editKontakte());
         termin.getItems().get(1).setOnAction(e->saveTermine());
         termin.getItems().get(0).setOnAction(e->loadTermine());
+        Kontakt[] kontaktdaten = adressen.getAlleKontakte();
+        for (Kontakt k : kontaktdaten) {
+            untermenu.getItems().add(new MenuItem(k.getName()));
+            setHandler(untermenu, (e)->handleMenu(e));
+        }
         
     }
+    
+    
     
     private void setHandler(Menu menu, EventHandler<ActionEvent> handler) {
         for(MenuItem it : menu.getItems()) {
@@ -118,8 +132,6 @@ public class PlanerViewController implements Initializable {
     }
 
     private void configureList() {
-
-        data = FXCollections.observableArrayList();
 
         terminliste.setItems(data);
 
@@ -144,9 +156,11 @@ public class PlanerViewController implements Initializable {
         Änderungen unter Umständen nicht wirksam werden.
                 */
         
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("adressbuchView.fxml"));
-        //fxmlLoader.setLocation("adressbuchView.fxml");
-        //fxmlLoader.setController(PlanerViewController);
+        Initializable controller = new AdressbuchViewController();
+        URL location = getClass().getResource("/adressbuch/adressbuchView.fxml");
+        ViewHelper.showView(controller, location);
+        
+      
     }
 
     private void saveTermine() {
@@ -182,11 +196,19 @@ public class PlanerViewController implements Initializable {
         
         Termin selection = terminliste.getSelectionModel().getSelectedItem();
         Initializable controller = null;
-        URL location = getClass().getResource("terminView.fxml");
+       
+       URL location = getClass().getResource("terminView.fxml");
+       if(selection != null) {
         if(planer.updateErlaubt(selection)) {
             controller = new TerminViewController(selection, this);
+            ViewHelper.showView(controller, location);
+        } else 
+            //if(!planer.updateErlaubt(selection)) 
+        {
+            controller = new TerminViewController(selection, null);
+            ViewHelper.showView(controller, location);
         }
-        ViewHelper.showView(controller, location);
+       }
         
     }
 
@@ -201,7 +223,20 @@ public class PlanerViewController implements Initializable {
     }
     
     public void processTermin(Termin t) throws TerminUeberschneidungException {
-        planer.updateTermin(t);
+            planer.setTermin(t);
+            showTermine();
+    }
+
+    private void handleMenu(ActionEvent e) {
+        MenuItem it = (MenuItem) e.getSource();
+        if(it.getText()=="axel") {
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle("Open File");
+            
+            File dir = new File("/Users/valentin/Desktop");
+            chooser.setInitialDirectory(dir);
+            File selection = chooser.showOpenDialog(null);
+        }
     }
     
     

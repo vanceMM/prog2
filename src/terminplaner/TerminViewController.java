@@ -3,13 +3,17 @@ package terminplaner;
 
 
 import adressbuch.Kontakt;
+import adressbuch.ViewHelper;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -98,6 +102,7 @@ public class TerminViewController implements Initializable {
         von.setText(termin.getVon().toString());
         bis.setText(termin.getBis().toString());
         text.setText(termin.getText());
+
         
     }
     
@@ -119,10 +124,38 @@ public class TerminViewController implements Initializable {
      * z.B. wegen der von/bis Angaben, so wird der Fehler im Fenster angezeigt.
      */
     private void saveTermin() {
-        
+        try {
+            Termin t = null;
+            if ( termin == null) {
+                try {
+                    String termintext = text.getText();
+                    LocalDate terminDatum = datum.getValue();
+                    t = new Termin(termintext, terminDatum, getTime(von.getText()), getTime(bis.getText()));
+                    SortedList<Kontakt> teilnehmer = teilnehmerliste.getItems().sorted();
+                    for (Kontakt k : teilnehmer) {
+                        termin.addTeilnehmer(k);
+                    }
+                } catch (UngueltigerTerminException ex) {
+                    ViewHelper.showError(ex.toString());
+                }
+            }
+            if (null!=termin) {
+                try {
+                    t = termin.getCopy();
+                    t.setDatum(datum.getValue());
+                    t.setText(text.getText());
+                    t.setVonBis(getTime(von.getText()), getTime(bis.getText()));
+                } catch (UngueltigerTerminException ex) {
+                    ViewHelper.showError(ex.toString());
+                }
+            }
+            controller.processTermin(t);
+            close();
+        } catch (TerminUeberschneidungException ex) {
+            ViewHelper.showError(ex.toString());
+        }
+         
     }
-
-   
 
     private void close() {
         Stage window = (Stage) cancel.getScene().getWindow();
